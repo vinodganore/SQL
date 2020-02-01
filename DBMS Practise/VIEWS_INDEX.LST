@@ -1,0 +1,456 @@
+SQL> SET LINE 150;
+SQL> DESC TEMP;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ EMPNO                                                                               NOT NULL NUMBER(4)
+ ENAME                                                                                        VARCHAR2(10)
+ JOB                                                                                          VARCHAR2(9)
+ MGR                                                                                          NUMBER(4)
+ HIREDATE                                                                                     DATE
+ SAL                                                                                          NUMBER(7,2)
+ COMM                                                                                         NUMBER(7,2)
+ DEPTNO                                                                                       NUMBER(2)
+ EMAIL                                                                                        VARCHAR2(20)
+
+SQL> DESC USER_CONSTRAINTS;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ OWNER                                                                               NOT NULL VARCHAR2(30)
+ CONSTRAINT_NAME                                                                     NOT NULL VARCHAR2(30)
+ CONSTRAINT_TYPE                                                                              VARCHAR2(1)
+ TABLE_NAME                                                                          NOT NULL VARCHAR2(30)
+ SEARCH_CONDITION                                                                             LONG
+ R_OWNER                                                                                      VARCHAR2(30)
+ R_CONSTRAINT_NAME                                                                            VARCHAR2(30)
+ DELETE_RULE                                                                                  VARCHAR2(9)
+ STATUS                                                                                       VARCHAR2(8)
+ DEFERRABLE                                                                                   VARCHAR2(14)
+ DEFERRED                                                                                     VARCHAR2(9)
+ VALIDATED                                                                                    VARCHAR2(13)
+ GENERATED                                                                                    VARCHAR2(14)
+ BAD                                                                                          VARCHAR2(3)
+ RELY                                                                                         VARCHAR2(4)
+ LAST_CHANGE                                                                                  DATE
+ INDEX_OWNER                                                                                  VARCHAR2(30)
+ INDEX_NAME                                                                                   VARCHAR2(30)
+ INVALID                                                                                      VARCHAR2(7)
+ VIEW_RELATED                                                                                 VARCHAR2(14)
+
+SQL> SELECT CONSTRAINT_NAME,CONSTRAINT_TYPE,OWNER,TABLE_NAME,STATUS,DEFERRABLE,INDEX_NAME
+  2  FROM USER_CONSTRAINTS WHERE TABLE_NAME='TEMP';
+
+CONSTRAINT_NAME                C OWNER                          TABLE_NAME                     STATUS   DEFERRABLE     INDEX_NAME                     
+------------------------------ - ------------------------------ ------------------------------ -------- -------------- ------------------------------ 
+SYS_C005746                    P VINOD1                         TEMP                           ENABLED  NOT DEFERRABLE TEMP_PK                        
+
+SQL> CREATE GLOBAL TEMPORARY TABLE EGT
+  2  AS
+  3  SELECT E.EMPNO,E.ENAME,E.JOB,E.SAL.D.DEPTNO,D.DNAME
+  4  FROM EMP E,DEPT D
+  5  WHERE E.DEPTNO=D.DEPTNO;
+SELECT E.EMPNO,E.ENAME,E.JOB,E.SAL.D.DEPTNO,D.DNAME
+                             *
+ERROR at line 3:
+ORA-00904: "E"."SAL"."D"."DEPTNO": invalid identifier 
+
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  CREATE GLOBAL TEMPORARY TABLE EGT
+  2  AS
+  3  SELECT E.EMPNO,E.ENAME,E.JOB,E.SAL,D.DEPTNO,D.DNAME
+  4  FROM EMP E,DEPT D
+  5* WHERE E.DEPTNO=D.DEPTNO
+SQL> /
+
+Table created.
+
+SQL> DESC EGT;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ EMPNO                                                                                        NUMBER(4)
+ ENAME                                                                                        VARCHAR2(10)
+ JOB                                                                                          VARCHAR2(9)
+ SAL                                                                                          NUMBER(7,2)
+ DEPTNO                                                                                       NUMBER(2)
+ DNAME                                                                                        VARCHAR2(14)
+
+SQL> SELECT * FROM EGT;
+
+no rows selected
+
+SQL> INSERT INTO EGT(SELECT E.EMPNO,E.ENAME,E.JOB,E.SAL,D.DEPTNO,D.DNAME
+  2  FROM EMP E,DEPT D
+  3  WHERE E.DEPTNO=D.DEPTNO);
+
+14 rows created.
+
+SQL> SELECT * FROM EGT;
+
+     EMPNO ENAME      JOB              SAL     DEPTNO DNAME                                                                                           
+---------- ---------- --------- ---------- ---------- --------------                                                                                  
+      7369 SMITH      CLERK            800         20 RESEARCH                                                                                        
+      7499 ALLEN      SALESMAN        1600         30 SALES                                                                                           
+      7521 WARD       SALESMAN        1250         30 SALES                                                                                           
+      7566 JONES      MANAGER         2975         20 RESEARCH                                                                                        
+      7654 MARTIN     SALESMAN        1250         30 SALES                                                                                           
+      7698 BLAKE      MANAGER         2850         30 SALES                                                                                           
+      7782 CLARK      MANAGER         2450         10 ACCOUNTING                                                                                      
+      7788 SCOTT      ANALYST         3000         20 RESEARCH                                                                                        
+      7839 KING       PRESIDENT       5000         10 ACCOUNTING                                                                                      
+      7844 TURNER     SALESMAN        1500         30 SALES                                                                                           
+      7876 ADAMS      CLERK           1100         20 RESEARCH                                                                                        
+
+     EMPNO ENAME      JOB              SAL     DEPTNO DNAME                                                                                           
+---------- ---------- --------- ---------- ---------- --------------                                                                                  
+      7900 JAMES      CLERK            950         30 SALES                                                                                           
+      7902 FORD       ANALYST         3000         20 RESEARCH                                                                                        
+      7934 MILLER     CLERK           1300         40 OPERATIONS                                                                                      
+
+14 rows selected.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SELECT * FROM EGT;
+
+no rows selected
+
+SQL> SET AUTOTRACE ON EXPLAIN;
+SQL> SELECT * FROM EMP WHERE SAL>1500;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO                                                                 
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+
+7 rows selected.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                            
+Plan hash value: 3956160932                                                                                                                           
+                                                                                                                                                      
+--------------------------------------------------------------------------                                                                            
+| Id  | Operation         | Name | Rows  | Bytes | Cost (%CPU)| Time     |                                                                            
+--------------------------------------------------------------------------                                                                            
+|   0 | SELECT STATEMENT  |      |    13 |   468 |     3   (0)| 00:00:01 |                                                                            
+|*  1 |  TABLE ACCESS FULL| EMP  |    13 |   468 |     3   (0)| 00:00:01 |                                                                            
+--------------------------------------------------------------------------                                                                            
+                                                                                                                                                      
+Predicate Information (identified by operation id):                                                                                                   
+---------------------------------------------------                                                                                                   
+                                                                                                                                                      
+   1 - filter("SAL">1500)                                                                                                                             
+
+SQL> CREATE INDEX SALIDX ON TEMP(SAL);
+
+Index created.
+
+SQL> DESC USER_INDEXES;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ INDEX_NAME                                                                          NOT NULL VARCHAR2(30)
+ INDEX_TYPE                                                                                   VARCHAR2(27)
+ TABLE_OWNER                                                                         NOT NULL VARCHAR2(30)
+ TABLE_NAME                                                                          NOT NULL VARCHAR2(30)
+ TABLE_TYPE                                                                                   VARCHAR2(11)
+ UNIQUENESS                                                                                   VARCHAR2(9)
+ COMPRESSION                                                                                  VARCHAR2(8)
+ PREFIX_LENGTH                                                                                NUMBER
+ TABLESPACE_NAME                                                                              VARCHAR2(30)
+ INI_TRANS                                                                                    NUMBER
+ MAX_TRANS                                                                                    NUMBER
+ INITIAL_EXTENT                                                                               NUMBER
+ NEXT_EXTENT                                                                                  NUMBER
+ MIN_EXTENTS                                                                                  NUMBER
+ MAX_EXTENTS                                                                                  NUMBER
+ PCT_INCREASE                                                                                 NUMBER
+ PCT_THRESHOLD                                                                                NUMBER
+ INCLUDE_COLUMN                                                                               NUMBER
+ FREELISTS                                                                                    NUMBER
+ FREELIST_GROUPS                                                                              NUMBER
+ PCT_FREE                                                                                     NUMBER
+ LOGGING                                                                                      VARCHAR2(3)
+ BLEVEL                                                                                       NUMBER
+ LEAF_BLOCKS                                                                                  NUMBER
+ DISTINCT_KEYS                                                                                NUMBER
+ AVG_LEAF_BLOCKS_PER_KEY                                                                      NUMBER
+ AVG_DATA_BLOCKS_PER_KEY                                                                      NUMBER
+ CLUSTERING_FACTOR                                                                            NUMBER
+ STATUS                                                                                       VARCHAR2(8)
+ NUM_ROWS                                                                                     NUMBER
+ SAMPLE_SIZE                                                                                  NUMBER
+ LAST_ANALYZED                                                                                DATE
+ DEGREE                                                                                       VARCHAR2(40)
+ INSTANCES                                                                                    VARCHAR2(40)
+ PARTITIONED                                                                                  VARCHAR2(3)
+ TEMPORARY                                                                                    VARCHAR2(1)
+ GENERATED                                                                                    VARCHAR2(1)
+ SECONDARY                                                                                    VARCHAR2(1)
+ BUFFER_POOL                                                                                  VARCHAR2(7)
+ USER_STATS                                                                                   VARCHAR2(3)
+ DURATION                                                                                     VARCHAR2(15)
+ PCT_DIRECT_ACCESS                                                                            NUMBER
+ ITYP_OWNER                                                                                   VARCHAR2(30)
+ ITYP_NAME                                                                                    VARCHAR2(30)
+ PARAMETERS                                                                                   VARCHAR2(1000)
+ GLOBAL_STATS                                                                                 VARCHAR2(3)
+ DOMIDX_STATUS                                                                                VARCHAR2(12)
+ DOMIDX_OPSTATUS                                                                              VARCHAR2(6)
+ FUNCIDX_STATUS                                                                               VARCHAR2(8)
+ JOIN_INDEX                                                                                   VARCHAR2(3)
+ IOT_REDUNDANT_PKEY_ELIM                                                                      VARCHAR2(3)
+ DROPPED                                                                                      VARCHAR2(3)
+
+SQL> SELECT INDEX_NAME FROM USER_INDEXES WHERE TABLE_NAME='TEMP';
+
+INDEX_NAME                                                                                                                                            
+------------------------------                                                                                                                        
+TEMP_PK                                                                                                                                               
+SALIDX                                                                                                                                                
+
+
+Execution Plan
+----------------------------------------------------------                                                                                            
+Plan hash value: 2949960496                                                                                                                           
+                                                                                                                                                      
+-----------------------------------------------------------------------------------------------------                                                 
+| Id  | Operation                          | Name           | Rows  | Bytes | Cost (%CPU)| Time     |                                                 
+-----------------------------------------------------------------------------------------------------                                                 
+|   0 | SELECT STATEMENT                   |                |     8 |  1024 |    36   (0)| 00:00:01 |                                                 
+|   1 |  NESTED LOOPS OUTER                |                |     8 |  1024 |    36   (0)| 00:00:01 |                                                 
+|   2 |   NESTED LOOPS OUTER               |                |     3 |   351 |    34   (0)| 00:00:01 |                                                 
+|   3 |    NESTED LOOPS OUTER              |                |     3 |   342 |    32   (0)| 00:00:01 |                                                 
+|   4 |     NESTED LOOPS OUTER             |                |     3 |   333 |    29   (0)| 00:00:01 |                                                 
+|   5 |      NESTED LOOPS                  |                |     3 |   309 |    26   (0)| 00:00:01 |                                                 
+|   6 |       NESTED LOOPS                 |                |     3 |   201 |    23   (0)| 00:00:01 |                                                 
+|   7 |        NESTED LOOPS                |                |     2 |    72 |    22   (0)| 00:00:01 |                                                 
+|   8 |         TABLE ACCESS BY INDEX ROWID| OBJ$           |     2 |    66 |    20   (0)| 00:00:01 |                                                 
+|*  9 |          INDEX SKIP SCAN           | I_OBJ2         |     2 |       |    18   (0)| 00:00:01 |                                                 
+|  10 |         TABLE ACCESS CLUSTER       | USER$          |     1 |     3 |     1   (0)| 00:00:01 |                                                 
+|* 11 |          INDEX UNIQUE SCAN         | I_USER#        |     1 |       |     0   (0)| 00:00:01 |                                                 
+|* 12 |        TABLE ACCESS CLUSTER        | IND$           |     2 |    62 |     1   (0)| 00:00:01 |                                                 
+|* 13 |         INDEX UNIQUE SCAN          | I_OBJ#         |     1 |       |     0   (0)| 00:00:01 |                                                 
+|* 14 |       TABLE ACCESS BY INDEX ROWID  | OBJ$           |     1 |    36 |     1   (0)| 00:00:01 |                                                 
+|* 15 |        INDEX UNIQUE SCAN           | I_OBJ1         |     1 |       |     0   (0)| 00:00:01 |                                                 
+|  16 |      TABLE ACCESS BY INDEX ROWID   | OBJ$           |     1 |     8 |     1   (0)| 00:00:01 |                                                 
+|* 17 |       INDEX UNIQUE SCAN            | I_OBJ1         |     1 |       |     0   (0)| 00:00:01 |                                                 
+|  18 |     TABLE ACCESS CLUSTER           | TS$            |     1 |     3 |     1   (0)| 00:00:01 |                                                 
+|* 19 |      INDEX UNIQUE SCAN             | I_TS#          |     1 |       |     0   (0)| 00:00:01 |                                                 
+|  20 |    TABLE ACCESS CLUSTER            | USER$          |     1 |     3 |     1   (0)| 00:00:01 |                                                 
+|* 21 |     INDEX UNIQUE SCAN              | I_USER#        |     1 |       |     0   (0)| 00:00:01 |                                                 
+|  22 |   TABLE ACCESS CLUSTER             | SEG$           |     2 |    22 |     1   (0)| 00:00:01 |                                                 
+|* 23 |    INDEX UNIQUE SCAN               | I_FILE#_BLOCK# |     1 |       |     0   (0)| 00:00:01 |                                                 
+-----------------------------------------------------------------------------------------------------                                                 
+                                                                                                                                                      
+Predicate Information (identified by operation id):                                                                                                   
+---------------------------------------------------                                                                                                   
+                                                                                                                                                      
+   9 - access("IO"."NAME"='TEMP')                                                                                                                     
+       filter("IO"."NAME"='TEMP')                                                                                                                     
+  11 - access("IO"."OWNER#"="IU"."USER#")                                                                                                             
+  12 - filter(BITAND("I"."FLAGS",4096)=0 AND ("I"."TYPE#"=1 OR "I"."TYPE#"=2 OR                                                                       
+              "I"."TYPE#"=3 OR "I"."TYPE#"=4 OR "I"."TYPE#"=6 OR "I"."TYPE#"=7 OR "I"."TYPE#"=8 OR                                                    
+              "I"."TYPE#"=9))                                                                                                                         
+  13 - access("I"."BO#"="IO"."OBJ#")                                                                                                                  
+  14 - filter("O"."OWNER#"=USERENV('SCHEMAID') AND BITAND("O"."FLAGS",128)=0)                                                                         
+  15 - access("O"."OBJ#"="I"."OBJ#")                                                                                                                  
+  17 - access("I"."INDMETHOD#"="ITO"."OBJ#"(+))                                                                                                       
+  19 - access("I"."TS#"="TS"."TS#"(+))                                                                                                                
+  21 - access("ITO"."OWNER#"="ITU"."USER#"(+))                                                                                                        
+  23 - access("I"."TS#"="S"."TS#"(+) AND "I"."FILE#"="S"."FILE#"(+) AND                                                                               
+              "I"."BLOCK#"="S"."BLOCK#"(+))                                                                                                           
+
+SQL> SET AUTOTRACE OFF EXPLAIN;
+SQL> /
+
+INDEX_NAME                                                                                                                                            
+------------------------------                                                                                                                        
+TEMP_PK                                                                                                                                               
+SALIDX                                                                                                                                                
+
+SQL> SELECT INDEX_NAME FROM USER_INDEXES WHERE TABLE_NAME='TEMP';
+
+INDEX_NAME                                                                                                                                            
+------------------------------                                                                                                                        
+TEMP_PK                                                                                                                                               
+SALIDX                                                                                                                                                
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1* SELECT INDEX_NAME,STATUS FROM USER_INDEXES WHERE TABLE_NAME='TEMP'
+SQL> /
+
+INDEX_NAME                     STATUS                                                                                                                 
+------------------------------ --------                                                                                                               
+TEMP_PK                        VALID                                                                                                                  
+SALIDX                         VALID                                                                                                                  
+
+SQL> CREATE UNIQUE INDEX DNOIDX ON DEPT(DNAME);
+
+Index created.
+
+SQL> SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='TEMP';
+
+INDEX_NAME                     STATUS   TABLE_NAME                                                                                                    
+------------------------------ -------- ------------------------------                                                                                
+TEMP_PK                        VALID    TEMP                                                                                                          
+SALIDX                         VALID    TEMP                                                                                                          
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1* SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='DEPT'
+SQL> /
+
+INDEX_NAME                     STATUS   TABLE_NAME                                                                                                    
+------------------------------ -------- ------------------------------                                                                                
+PK_DEPT                        VALID    DEPT                                                                                                          
+DNOIDX                         VALID    DEPT                                                                                                          
+
+SQL> ALTER TABLE DROP PRIMARY KEY;
+ALTER TABLE DROP PRIMARY KEY
+            *
+ERROR at line 1:
+ORA-00903: invalid table name 
+
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1* ALTER TABLE DEPT DROP PRIMARY KEY
+SQL> /
+
+Table altered.
+
+SQL> SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='DEPT';
+
+INDEX_NAME                     STATUS   TABLE_NAME                                                                                                    
+------------------------------ -------- ------------------------------                                                                                
+DNOIDX                         VALID    DEPT                                                                                                          
+
+SQL> CREATE INDEX ENO_ENAME_CINX ON TEMP(EMPNO,ENAME);
+
+Index created.
+
+SQL> SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='TEMP';
+
+INDEX_NAME                     STATUS   TABLE_NAME                                                                                                    
+------------------------------ -------- ------------------------------                                                                                
+ENO_ENAME_CINX                 VALID    TEMP                                                                                                          
+TEMP_PK                        VALID    TEMP                                                                                                          
+SALIDX                         VALID    TEMP                                                                                                          
+
+SQL> CREATE UNIQUE INDEX ENO_ENAME_CINX ON TEMP(EMPNO,ENAME);
+CREATE UNIQUE INDEX ENO_ENAME_CINX ON TEMP(EMPNO,ENAME)
+                    *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object 
+
+
+SQL> CREATE UNIQUE INDEX ENO_ENAME_CIN ON TEMP(EMPNO,ENAME);
+CREATE UNIQUE INDEX ENO_ENAME_CIN ON TEMP(EMPNO,ENAME)
+                                          *
+ERROR at line 1:
+ORA-01408: such column list already indexed 
+
+
+SQL> CREATE UNIQUE INDEX ENO_ENAME_CIN ON TEMP(EMPNO,ENAME,JOB);
+
+Index created.
+
+SQL> SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='TEMP';
+
+INDEX_NAME                     STATUS   TABLE_NAME                                                                                                    
+------------------------------ -------- ------------------------------                                                                                
+ENO_ENAME_CINX                 VALID    TEMP                                                                                                          
+TEMP_PK                        VALID    TEMP                                                                                                          
+SALIDX                         VALID    TEMP                                                                                                          
+ENO_ENAME_CIN                  VALID    TEMP                                                                                                          
+
+SQL> SELECT * FROM TEMP_PK;
+SELECT * FROM TEMP_PK
+              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> INSERT INTO ENO_ENAME_CINX VALUES(7902,'FORD');
+INSERT INTO ENO_ENAME_CINX VALUES(7902,'FORD')
+            *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> CREATE INDEX UPPER_DEPT_NAME_IDX ON DEPT(UPPER(DNAME));
+
+Index created.
+
+SQL> SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='DEPT';
+
+INDEX_NAME                     STATUS   TABLE_NAME                                                                                                    
+------------------------------ -------- ------------------------------                                                                                
+DNOIDX                         VALID    DEPT                                                                                                          
+UPPER_DEPT_NAME_IDX            VALID    DEPT                                                                                                          
+
+SQL> SELECT * FROM DEPT WHERE DNAME='RESEARCH';
+
+    DEPTNO DNAME          LOC                                                                                                                         
+---------- -------------- -------------                                                                                                               
+        20 RESEARCH       DALLAS                                                                                                                      
+
+SQL> SELECT * FROM UPPER_DEPT_NAME_IDX;
+SELECT * FROM UPPER_DEPT_NAME_IDX
+              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> SELECT * FROM DEPT WHERE DNAME='Research';
+
+no rows selected
+
+SQL> SELECT * FROM DEPT WHERE UPPER(DNAME)='SALES';
+
+    DEPTNO DNAME          LOC                                                                                                                         
+---------- -------------- -------------                                                                                                               
+        30 SALES          CHICAGO                                                                                                                     
+
+SQL> CREATE BITMAP INDEX EMPBITMAPJOB ON EMP(JOB);
+
+Index created.
+
+SQL> SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='EMP';
+
+INDEX_NAME                     STATUS   TABLE_NAME                                                                                                    
+------------------------------ -------- ------------------------------                                                                                
+EMPBITMAPJOB                   VALID    EMP                                                                                                           
+
+SQL> ALTER INDEX EMPBITMAPJOB RENAME TO EBMJ;
+
+Index altered.
+
+SQL> SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='EMP';
+
+INDEX_NAME                     STATUS   TABLE_NAME                                                                                                    
+------------------------------ -------- ------------------------------                                                                                
+EBMJ                           VALID    EMP                                                                                                           
+
+SQL> DROP INDEX EBMJ;
+
+Index dropped.
+
+SQL> SELECT INDEX_NAME,STATUS,TABLE_NAME FROM USER_INDEXES WHERE TABLE_NAME='EMP';
+
+no rows selected
+
+SQL> spool off;

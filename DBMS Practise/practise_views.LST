@@ -1,0 +1,572 @@
+SQL> set line 100;
+SQL> select * from emp;
+
+no rows selected
+
+SQL> sho user
+USER is "SYSTEM"
+SQL> conn vinod
+ERROR:
+ORA-01017: invalid username/password; logon denied 
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> conn vinod1
+Connected.
+SQL> select * from emp;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO               
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------               
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20               
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30               
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30               
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20               
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30               
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30               
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10               
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20               
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10               
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30               
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20               
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO               
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------               
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30               
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20               
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40               
+      1001 jan                                             5461                    50               
+
+15 rows selected.
+
+SQL> delete from emp where empno=1001;
+
+1 row deleted.
+
+SQL> desc emp;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                          NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+
+SQL> select * from tab;
+
+TNAME                          TABTYPE  CLUSTERID                                                   
+------------------------------ ------- ----------                                                   
+DEPT                           TABLE                                                                
+EMP                            TABLE                                                                
+EMPV                           VIEW                                                                 
+EMPV2                          VIEW                                                                 
+DEPTNO20                       VIEW                                                                 
+DEPTNO30                       TABLE                                                                
+
+6 rows selected.
+
+SQL> create table emp as select * from emp;
+create table emp as select * from emp
+             *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1* create table temp as select * from emp
+SQL> /
+
+Table created.
+
+SQL> desc temp;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                          NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+
+SQL> alter table temp add primary key(empno);
+
+Table altered.
+
+SQL> desc temp;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+
+SQL> alter table temp add email varchar2(20);
+
+Table altered.
+
+SQL> desc temp;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+ EMAIL                                                          VARCHAR2(20)
+
+SQL> create view empsalary(empid,ename,email unique disable
+  2  ,constraint id_pk primary key(empid) disable
+  3  as
+  4  select empno,ename,email from emp;
+as
+*
+ERROR at line 3:
+ORA-00907: missing right parenthesis 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create view empsalary(empid,ename,email unique disable
+  2  ,constraint id_pk primary key(empid) disable)
+  3  as
+  4* select empno,ename,email from emp
+SQL> /
+select empno,ename,email from emp
+                   *
+ERROR at line 4:
+ORA-00904: "EMAIL": invalid identifier 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create view empsalary(empid,ename,email unique disable
+  2  ,constraint id_pk primary key(empid) disable)
+  3  as
+  4* select empno,ename,email from temp
+SQL> /
+
+View created.
+
+SQL> desc empsalary;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPID                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ EMAIL                                                          VARCHAR2(20)
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email
+  2  ,constraint id_pk primary key(empid) )
+  3  as
+  4* select empno,ename,email from temp
+SQL> /
+,constraint id_pk primary key(empid) )
+                  *
+ERROR at line 2:
+ORA-00922: missing or invalid option 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email
+  2  ,primary key(empid) )
+  3  as
+  4* select empno,ename,email from temp
+SQL> /
+,primary key(empid) )
+ *
+ERROR at line 2:
+ORA-00922: missing or invalid option 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email
+  2  ,constraint eid_pkprimary key(empid) )
+  3  as
+  4* select empno,ename,email from temp
+SQL> /
+,constraint eid_pkprimary key(empid) )
+                             *
+ERROR at line 2:
+ORA-00907: missing right parenthesis 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email
+  2  ,constraint eid_pk primary key(empid) )
+  3  as
+  4* select empno,ename,email from temp
+SQL> /
+,constraint eid_pk primary key(empid) )
+                   *
+ERROR at line 2:
+ORA-00922: missing or invalid option 
+
+
+SQL> desc empsalary;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPID                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ EMAIL                                                          VARCHAR2(20)
+
+SQL> insert into empsalary values(7369,'jan','vinodg@gmail');
+insert into empsalary values(7369,'jan','vinodg@gmail')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VINOD1.SYS_C005733) violated 
+
+
+SQL>  create or replace view empsalary(empid,ename,email
+  2   ,constraint eid_pkprimary key(empid) )
+  3   as
+  4   select empno,ename,email from temp
+  5  .
+SQL> ed
+Wrote file afiedt.buf
+
+  1   create or replace view empsalary(empid,ename,email)
+  2   as
+  3*  select empno,ename,email from temp
+SQL> /
+
+View created.
+
+SQL> desc empsalary;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPID                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ EMAIL                                                          VARCHAR2(20)
+
+SQL>  insert into empsalary values(7369,'jan','vinodg@gmail');
+ insert into empsalary values(7369,'jan','vinodg@gmail')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VINOD1.SYS_C005733) violated 
+
+
+SQL> alter table temp drop primary key;
+
+Table altered.
+
+SQL> insert into empsalary values(7369,'jan','vinodg@gmail');
+
+1 row created.
+
+SQL> select * from empsalary;
+
+     EMPID ENAME      EMAIL                                                                         
+---------- ---------- --------------------                                                          
+      7369 SMITH                                                                                    
+      7499 ALLEN                                                                                    
+      7521 WARD                                                                                     
+      7566 JONES                                                                                    
+      7654 MARTIN                                                                                   
+      7698 BLAKE                                                                                    
+      7782 CLARK                                                                                    
+      7788 SCOTT                                                                                    
+      7839 KING                                                                                     
+      7844 TURNER                                                                                   
+      7876 ADAMS                                                                                    
+
+     EMPID ENAME      EMAIL                                                                         
+---------- ---------- --------------------                                                          
+      7900 JAMES                                                                                    
+      7902 FORD                                                                                     
+      7934 MILLER                                                                                   
+      7369 jan        vinodg@gmail                                                                  
+
+15 rows selected.
+
+SQL> select * from temp;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO               
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------               
+EMAIL                                                                                               
+--------------------                                                                                
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20               
+                                                                                                    
+                                                                                                    
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30               
+                                                                                                    
+                                                                                                    
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30               
+                                                                                                    
+                                                                                                    
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO               
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------               
+EMAIL                                                                                               
+--------------------                                                                                
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20               
+                                                                                                    
+                                                                                                    
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30               
+                                                                                                    
+                                                                                                    
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30               
+                                                                                                    
+                                                                                                    
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO               
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------               
+EMAIL                                                                                               
+--------------------                                                                                
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10               
+                                                                                                    
+                                                                                                    
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20               
+                                                                                                    
+                                                                                                    
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10               
+                                                                                                    
+                                                                                                    
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO               
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------               
+EMAIL                                                                                               
+--------------------                                                                                
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30               
+                                                                                                    
+                                                                                                    
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20               
+                                                                                                    
+                                                                                                    
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30               
+                                                                                                    
+                                                                                                    
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO               
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------               
+EMAIL                                                                                               
+--------------------                                                                                
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20               
+                                                                                                    
+                                                                                                    
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40               
+                                                                                                    
+                                                                                                    
+      7369 jan                                                                                      
+vinodg@gmail                                                                                        
+                                                                                                    
+
+15 rows selected.
+
+SQL> set line 200;
+SQL> /
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                                                                             
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                                                                              
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                                                                   
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                                                                   
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                                                                   
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                                                                   
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                                                                   
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                                                                   
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                                                                   
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                                                                   
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                                                                   
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                                                                   
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                                                                   
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                                                                             
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                                                                              
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                                                                   
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                                                                   
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40                                                                                                                   
+      7369 jan                                                                        vinodg@gmail                                                                                                      
+
+15 rows selected.
+
+SQL> rollback;
+
+Rollback complete.
+
+SQL> select * from temp;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                                                                             
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                                                                              
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                                                                   
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                                                                   
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                                                                   
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                                                                   
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                                                                   
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                                                                   
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                                                                   
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                                                                   
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                                                                   
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                                                                   
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                                                                   
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                                                                             
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                                                                              
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                                                                   
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                                                                   
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40                                                                                                                   
+
+14 rows selected.
+
+SQL> 
+SQL> create or replace view empsalary(empid,ename,email unique rely disable novalidate,
+  2  constraint id_pk primary key(empid) rely disable novalidate)
+  3  as
+  4  select empno,ename,email from temp;
+
+View created.
+
+SQL> desc empsalary;
+ Name                                                                                                              Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ EMPID                                                                                                                      NUMBER(4)
+ ENAME                                                                                                                      VARCHAR2(10)
+ EMAIL                                                                                                                      VARCHAR2(20)
+
+SQL> set line 100;
+SQL> alter table temp add primary key(empno);
+
+Table altered.
+
+SQL> desc temp;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPNO                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ JOB                                                            VARCHAR2(9)
+ MGR                                                            NUMBER(4)
+ HIREDATE                                                       DATE
+ SAL                                                            NUMBER(7,2)
+ COMM                                                           NUMBER(7,2)
+ DEPTNO                                                         NUMBER(2)
+ EMAIL                                                          VARCHAR2(20)
+
+SQL> desc empsalary;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ EMPID                                                 NOT NULL NUMBER(4)
+ ENAME                                                          VARCHAR2(10)
+ EMAIL                                                          VARCHAR2(20)
+
+SQL> insert into empsalary values(7369,'jan','vinodg@gmail');
+insert into empsalary values(7369,'jan','vinodg@gmail')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VINOD1.SYS_C005738) violated 
+
+
+SQL> create or replace view empsalary(empid,ename,email unique rely disable novalidate,
+  2  constraint id_pk primary key(empid) rely disable novalidate)
+  3  as
+  4  select empno,ename,email from temp
+  5  .
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email unique disable ,
+  2  constraint id_pk primary key(empid) disable )
+  3  as
+  4* select empno,ename,email from temp
+SQL> /
+
+View created.
+
+SQL> insert into empsalary values(7369,'jan','vinodg@gmail');
+insert into empsalary values(7369,'jan','vinodg@gmail')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VINOD1.SYS_C005738) violated 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email rely disable novalidate,
+  2  constraint id_pk primary key(empid) rely disable novalidate)
+  3  as
+  4  select empno,ename,email from temp
+  5* .
+SQL> /
+create or replace view empsalary(empid,ename,email rely disable novalidate,
+                                                   *
+ERROR at line 1:
+ORA-00907: missing right parenthesis 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email  disable ,
+  2  constraint id_pk primary key(empid)  disable )
+  3  as
+  4  select empno,ename,email from temp
+  5* .
+SQL> /
+create or replace view empsalary(empid,ename,email  disable ,
+                                                    *
+ERROR at line 1:
+ORA-00907: missing right parenthesis 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email,
+  2  constraint id_pk primary key(empid)  disable )
+  3  as
+  4  select empno,ename,email from temp
+  5* .
+SQL> /
+.
+*
+ERROR at line 5:
+ORA-00903: invalid table name 
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  create or replace view empsalary(empid,ename,email,
+  2  constraint id_pk primary key(empid)  disable )
+  3  as
+  4* select empno,ename,email from temp
+  5  /
+
+View created.
+
+SQL> insert into empsalary values(7369,'jan','vinodg@gmail');
+insert into empsalary values(7369,'jan','vinodg@gmail')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VINOD1.SYS_C005738) violated 
+
+
+SQL> select CONSTRAINT_TYPE,CONSTRAINT_NAME FROM USER_CONSTRAINTS
+  2  WHERE TABLE_NAME='TEMP';
+
+C CONSTRAINT_NAME                                                                                   
+- ------------------------------                                                                    
+P SYS_C005738                                                                                       
+
+SQL> SPOOL OFF;

@@ -1,0 +1,597 @@
+SQL> SELECT ENAME,EMPNO,MGR,JOB
+  2  FROM TEMP CONNECT BY PRIOR EMPNO=MGR
+  3  .
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10                                                                 
+      1003 VIN                                             6543                    20                                                                 
+      1001 JAN                                             5642                    10                                                                 
+      1002 VINOD                                          24515                    10                                                                 
+
+17 rows selected.
+
+SQL> ROLL BACK;
+Rollback complete.
+SQL>  SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10                                                                 
+      1003 VIN                                             6543                    20                                                                 
+      1001 JAN                                             5642                    10                                                                 
+      1002 VINOD                                          24515                    10                                                                 
+
+17 rows selected.
+
+SQL> DELETE FROM EMP WHERE EMPNO IN(1001,1002,1003);
+
+0 rows deleted.
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1* DELETE FROM TEMP WHERE EMPNO IN(1001,1002,1003)
+SQL> /
+
+3 rows deleted.
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10                                                                 
+
+14 rows selected.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SELECT ENAME,EMPNO,MGR,JOB
+  2  FROM TEMP CONNECT BY PRIOR EMPNO=MGR;
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+SCOTT            7788       7566 ANALYST                                                                                                              
+ADAMS            7876       7788 CLERK                                                                                                                
+FORD             7902       7566 ANALYST                                                                                                              
+SMITH            7369       7902 CLERK                                                                                                                
+ALLEN            7499       7698 SALESMAN                                                                                                             
+WARD             7521       7698 SALESMAN                                                                                                             
+JAMES            7900       7698 CLERK                                                                                                                
+TURNER           7844       7698 SALESMAN                                                                                                             
+MARTIN           7654       7698 SALESMAN                                                                                                             
+MILLER           7934       7782 CLERK                                                                                                                
+ADAMS            7876       7788 CLERK                                                                                                                
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+JONES            7566       7839 MANAGER                                                                                                              
+SCOTT            7788       7566 ANALYST                                                                                                              
+ADAMS            7876       7788 CLERK                                                                                                                
+FORD             7902       7566 ANALYST                                                                                                              
+SMITH            7369       7902 CLERK                                                                                                                
+CLARK            7782       7839 MANAGER                                                                                                              
+MILLER           7934       7782 CLERK                                                                                                                
+BLAKE            7698       7839 MANAGER                                                                                                              
+ALLEN            7499       7698 SALESMAN                                                                                                             
+WARD             7521       7698 SALESMAN                                                                                                             
+JAMES            7900       7698 CLERK                                                                                                                
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+TURNER           7844       7698 SALESMAN                                                                                                             
+MARTIN           7654       7698 SALESMAN                                                                                                             
+SMITH            7369       7902 CLERK                                                                                                                
+KING             7839            PRESIDENT                                                                                                            
+JONES            7566       7839 MANAGER                                                                                                              
+SCOTT            7788       7566 ANALYST                                                                                                              
+ADAMS            7876       7788 CLERK                                                                                                                
+FORD             7902       7566 ANALYST                                                                                                              
+SMITH            7369       7902 CLERK                                                                                                                
+CLARK            7782       7839 MANAGER                                                                                                              
+MILLER           7934       7782 CLERK                                                                                                                
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+BLAKE            7698       7839 MANAGER                                                                                                              
+ALLEN            7499       7698 SALESMAN                                                                                                             
+WARD             7521       7698 SALESMAN                                                                                                             
+JAMES            7900       7698 CLERK                                                                                                                
+TURNER           7844       7698 SALESMAN                                                                                                             
+MARTIN           7654       7698 SALESMAN                                                                                                             
+
+39 rows selected.
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,EMPNO,MGR,JOB
+  2  FROM TEMP
+  3  START WITH JOB='PRESIDENT'
+  4*  CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+KING             7839            PRESIDENT                                                                                                            
+JONES            7566       7839 MANAGER                                                                                                              
+SCOTT            7788       7566 ANALYST                                                                                                              
+ADAMS            7876       7788 CLERK                                                                                                                
+FORD             7902       7566 ANALYST                                                                                                              
+SMITH            7369       7902 CLERK                                                                                                                
+BLAKE            7698       7839 MANAGER                                                                                                              
+ALLEN            7499       7698 SALESMAN                                                                                                             
+WARD             7521       7698 SALESMAN                                                                                                             
+MARTIN           7654       7698 SALESMAN                                                                                                             
+TURNER           7844       7698 SALESMAN                                                                                                             
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+JAMES            7900       7698 CLERK                                                                                                                
+CLARK            7782       7839 MANAGER                                                                                                              
+MILLER           7934       7782 CLERK                                                                                                                
+
+14 rows selected.
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,EMPNO,MGR,JOB
+  2  FROM TEMP
+  3  START WITH mgr is null
+  4*  CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+KING             7839            PRESIDENT                                                                                                            
+JONES            7566       7839 MANAGER                                                                                                              
+SCOTT            7788       7566 ANALYST                                                                                                              
+ADAMS            7876       7788 CLERK                                                                                                                
+FORD             7902       7566 ANALYST                                                                                                              
+SMITH            7369       7902 CLERK                                                                                                                
+BLAKE            7698       7839 MANAGER                                                                                                              
+ALLEN            7499       7698 SALESMAN                                                                                                             
+WARD             7521       7698 SALESMAN                                                                                                             
+MARTIN           7654       7698 SALESMAN                                                                                                             
+TURNER           7844       7698 SALESMAN                                                                                                             
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+JAMES            7900       7698 CLERK                                                                                                                
+CLARK            7782       7839 MANAGER                                                                                                              
+MILLER           7934       7782 CLERK                                                                                                                
+
+14 rows selected.
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,EMPNO,MGR,JOB
+  2  FROM TEMP
+  3  START WITH SAL=5000
+  4*  CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+KING             7839            PRESIDENT                                                                                                            
+JONES            7566       7839 MANAGER                                                                                                              
+SCOTT            7788       7566 ANALYST                                                                                                              
+ADAMS            7876       7788 CLERK                                                                                                                
+FORD             7902       7566 ANALYST                                                                                                              
+SMITH            7369       7902 CLERK                                                                                                                
+BLAKE            7698       7839 MANAGER                                                                                                              
+ALLEN            7499       7698 SALESMAN                                                                                                             
+WARD             7521       7698 SALESMAN                                                                                                             
+MARTIN           7654       7698 SALESMAN                                                                                                             
+TURNER           7844       7698 SALESMAN                                                                                                             
+
+ENAME           EMPNO        MGR JOB                                                                                                                  
+---------- ---------- ---------- ---------                                                                                                            
+JAMES            7900       7698 CLERK                                                                                                                
+CLARK            7782       7839 MANAGER                                                                                                              
+MILLER           7934       7782 CLERK                                                                                                                
+
+14 rows selected.
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,EMPNO,MGR,JOB,SAL
+  2  FROM TEMP
+  3  START WITH SAL=3000
+  4*  CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME           EMPNO        MGR JOB              SAL                                                                                                 
+---------- ---------- ---------- --------- ----------                                                                                                 
+SCOTT            7788       7566 ANALYST         3000                                                                                                 
+ADAMS            7876       7788 CLERK           1100                                                                                                 
+FORD             7902       7566 ANALYST         3000                                                                                                 
+SMITH            7369       7902 CLERK            800                                                                                                 
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,EMPNO,MGR,JOB,SAL
+  2  FROM TEMP
+  3  START WITH SAL=5000
+  4*  CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME           EMPNO        MGR JOB              SAL                                                                                                 
+---------- ---------- ---------- --------- ----------                                                                                                 
+KING             7839            PRESIDENT       5000                                                                                                 
+JONES            7566       7839 MANAGER         2975                                                                                                 
+SCOTT            7788       7566 ANALYST         3000                                                                                                 
+ADAMS            7876       7788 CLERK           1100                                                                                                 
+FORD             7902       7566 ANALYST         3000                                                                                                 
+SMITH            7369       7902 CLERK            800                                                                                                 
+BLAKE            7698       7839 MANAGER         2850                                                                                                 
+ALLEN            7499       7698 SALESMAN        1600                                                                                                 
+WARD             7521       7698 SALESMAN        1250                                                                                                 
+MARTIN           7654       7698 SALESMAN        1250                                                                                                 
+TURNER           7844       7698 SALESMAN        1500                                                                                                 
+
+ENAME           EMPNO        MGR JOB              SAL                                                                                                 
+---------- ---------- ---------- --------- ----------                                                                                                 
+JAMES            7900       7698 CLERK            950                                                                                                 
+CLARK            7782       7839 MANAGER         2450                                                                                                 
+MILLER           7934       7782 CLERK           1300                                                                                                 
+
+14 rows selected.
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,EMPNO,MGR,JOB,SAL
+  2  FROM TEMP
+  3  START WITH SAL=800
+  4*  CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME           EMPNO        MGR JOB              SAL                                                                                                 
+---------- ---------- ---------- --------- ----------                                                                                                 
+SMITH            7369       7902 CLERK            800                                                                                                 
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,EMPNO,MGR,JOB,SAL
+  2  FROM TEMP
+  3  START WITH ENAME='KING'
+  4*  CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME           EMPNO        MGR JOB              SAL                                                                                                 
+---------- ---------- ---------- --------- ----------                                                                                                 
+KING             7839            PRESIDENT       5000                                                                                                 
+JONES            7566       7839 MANAGER         2975                                                                                                 
+SCOTT            7788       7566 ANALYST         3000                                                                                                 
+ADAMS            7876       7788 CLERK           1100                                                                                                 
+FORD             7902       7566 ANALYST         3000                                                                                                 
+SMITH            7369       7902 CLERK            800                                                                                                 
+BLAKE            7698       7839 MANAGER         2850                                                                                                 
+ALLEN            7499       7698 SALESMAN        1600                                                                                                 
+WARD             7521       7698 SALESMAN        1250                                                                                                 
+MARTIN           7654       7698 SALESMAN        1250                                                                                                 
+TURNER           7844       7698 SALESMAN        1500                                                                                                 
+
+ENAME           EMPNO        MGR JOB              SAL                                                                                                 
+---------- ---------- ---------- --------- ----------                                                                                                 
+JAMES            7900       7698 CLERK            950                                                                                                 
+CLARK            7782       7839 MANAGER         2450                                                                                                 
+MILLER           7934       7782 CLERK           1300                                                                                                 
+
+14 rows selected.
+
+SQL> SELECT ENAME,SYS_CONNECT_BY_PATH(ENAME,'/') "PATH"
+  2  FROM TEMP
+  3  START WITH ENAME='KING'
+  4  CONNECT BY PRIOR EMPNO=MGR;
+
+ENAME                                                                                                                                                 
+----------                                                                                                                                            
+PATH                                                                                                                                                  
+------------------------------------------------------------------------------------------------------------------------------------------------------
+KING                                                                                                                                                  
+/KING                                                                                                                                                 
+                                                                                                                                                      
+JONES                                                                                                                                                 
+/KING/JONES                                                                                                                                           
+                                                                                                                                                      
+SCOTT                                                                                                                                                 
+/KING/JONES/SCOTT                                                                                                                                     
+                                                                                                                                                      
+
+ENAME                                                                                                                                                 
+----------                                                                                                                                            
+PATH                                                                                                                                                  
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ADAMS                                                                                                                                                 
+/KING/JONES/SCOTT/ADAMS                                                                                                                               
+                                                                                                                                                      
+FORD                                                                                                                                                  
+/KING/JONES/FORD                                                                                                                                      
+                                                                                                                                                      
+SMITH                                                                                                                                                 
+/KING/JONES/FORD/SMITH                                                                                                                                
+                                                                                                                                                      
+
+ENAME                                                                                                                                                 
+----------                                                                                                                                            
+PATH                                                                                                                                                  
+------------------------------------------------------------------------------------------------------------------------------------------------------
+BLAKE                                                                                                                                                 
+/KING/BLAKE                                                                                                                                           
+                                                                                                                                                      
+ALLEN                                                                                                                                                 
+/KING/BLAKE/ALLEN                                                                                                                                     
+                                                                                                                                                      
+WARD                                                                                                                                                  
+/KING/BLAKE/WARD                                                                                                                                      
+                                                                                                                                                      
+
+ENAME                                                                                                                                                 
+----------                                                                                                                                            
+PATH                                                                                                                                                  
+------------------------------------------------------------------------------------------------------------------------------------------------------
+MARTIN                                                                                                                                                
+/KING/BLAKE/MARTIN                                                                                                                                    
+                                                                                                                                                      
+TURNER                                                                                                                                                
+/KING/BLAKE/TURNER                                                                                                                                    
+                                                                                                                                                      
+JAMES                                                                                                                                                 
+/KING/BLAKE/JAMES                                                                                                                                     
+                                                                                                                                                      
+
+ENAME                                                                                                                                                 
+----------                                                                                                                                            
+PATH                                                                                                                                                  
+------------------------------------------------------------------------------------------------------------------------------------------------------
+CLARK                                                                                                                                                 
+/KING/CLARK                                                                                                                                           
+                                                                                                                                                      
+MILLER                                                                                                                                                
+/KING/CLARK/MILLER                                                                                                                                    
+                                                                                                                                                      
+
+14 rows selected.
+
+SQL> COL PATH FORMAT A125;
+SQL> /
+
+ENAME      PATH                                                                                                                                       
+---------- -----------------------------------------------------------------------------------------------------------------------------              
+KING       /KING                                                                                                                                      
+JONES      /KING/JONES                                                                                                                                
+SCOTT      /KING/JONES/SCOTT                                                                                                                          
+ADAMS      /KING/JONES/SCOTT/ADAMS                                                                                                                    
+FORD       /KING/JONES/FORD                                                                                                                           
+SMITH      /KING/JONES/FORD/SMITH                                                                                                                     
+BLAKE      /KING/BLAKE                                                                                                                                
+ALLEN      /KING/BLAKE/ALLEN                                                                                                                          
+WARD       /KING/BLAKE/WARD                                                                                                                           
+MARTIN     /KING/BLAKE/MARTIN                                                                                                                         
+TURNER     /KING/BLAKE/TURNER                                                                                                                         
+
+ENAME      PATH                                                                                                                                       
+---------- -----------------------------------------------------------------------------------------------------------------------------              
+JAMES      /KING/BLAKE/JAMES                                                                                                                          
+CLARK      /KING/CLARK                                                                                                                                
+MILLER     /KING/CLARK/MILLER                                                                                                                         
+
+14 rows selected.
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,SYS_CONNECT_BY_PATH(ENAME,'@') "PATH"
+  2  FROM TEMP
+  3  START WITH ENAME='KING'
+  4* CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME      PATH                                                                                                                                       
+---------- -----------------------------------------------------------------------------------------------------------------------------              
+KING       @KING                                                                                                                                      
+JONES      @KING@JONES                                                                                                                                
+SCOTT      @KING@JONES@SCOTT                                                                                                                          
+ADAMS      @KING@JONES@SCOTT@ADAMS                                                                                                                    
+FORD       @KING@JONES@FORD                                                                                                                           
+SMITH      @KING@JONES@FORD@SMITH                                                                                                                     
+BLAKE      @KING@BLAKE                                                                                                                                
+ALLEN      @KING@BLAKE@ALLEN                                                                                                                          
+WARD       @KING@BLAKE@WARD                                                                                                                           
+MARTIN     @KING@BLAKE@MARTIN                                                                                                                         
+TURNER     @KING@BLAKE@TURNER                                                                                                                         
+
+ENAME      PATH                                                                                                                                       
+---------- -----------------------------------------------------------------------------------------------------------------------------              
+JAMES      @KING@BLAKE@JAMES                                                                                                                          
+CLARK      @KING@CLARK                                                                                                                                
+MILLER     @KING@CLARK@MILLER                                                                                                                         
+
+14 rows selected.
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1  SELECT ENAME,SYS_CONNECT_BY_PATH(ENAME,'+') "PATH"
+  2  FROM TEMP
+  3  START WITH ENAME='KING'
+  4* CONNECT BY PRIOR EMPNO=MGR
+SQL> /
+
+ENAME      PATH                                                                                                                                       
+---------- -----------------------------------------------------------------------------------------------------------------------------              
+KING       +KING                                                                                                                                      
+JONES      +KING+JONES                                                                                                                                
+SCOTT      +KING+JONES+SCOTT                                                                                                                          
+ADAMS      +KING+JONES+SCOTT+ADAMS                                                                                                                    
+FORD       +KING+JONES+FORD                                                                                                                           
+SMITH      +KING+JONES+FORD+SMITH                                                                                                                     
+BLAKE      +KING+BLAKE                                                                                                                                
+ALLEN      +KING+BLAKE+ALLEN                                                                                                                          
+WARD       +KING+BLAKE+WARD                                                                                                                           
+MARTIN     +KING+BLAKE+MARTIN                                                                                                                         
+TURNER     +KING+BLAKE+TURNER                                                                                                                         
+
+ENAME      PATH                                                                                                                                       
+---------- -----------------------------------------------------------------------------------------------------------------------------              
+JAMES      +KING+BLAKE+JAMES                                                                                                                          
+CLARK      +KING+CLARK                                                                                                                                
+MILLER     +KING+CLARK+MILLER                                                                                                                         
+
+14 rows selected.
+
+SQL> SPOOL OFF;
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10
+
+14 rows selected.
+
+SQL> ALTER TABLE TEMP DROP COLUMN JOB;
+
+Table altered.
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME             MGR HIREDATE         SAL       COMM     DEPTNO EMAIL
+---------- ---------- ---------- --------- ---------- ---------- ---------- --------------------
+      7369 SMITH            7902 17-DEC-80        800                    20
+      7499 ALLEN            7698 20-FEB-81       1600        300         30
+      7521 WARD             7698 22-FEB-81       1250        500         30
+      7566 JONES            7839 02-APR-81       2975                    20
+      7654 MARTIN           7698 28-SEP-81       1250       1400         30
+      7698 BLAKE            7839 01-MAY-81       2850                    30
+      7782 CLARK            7839 09-JUN-81       2450                    10
+      7788 SCOTT            7566 09-DEC-82       3000                    20
+      7839 KING                  17-NOV-81       5000                    10
+      7844 TURNER           7698 08-SEP-81       1500          0         30
+      7876 ADAMS            7788 12-JAN-83       1100                    20
+
+     EMPNO ENAME             MGR HIREDATE         SAL       COMM     DEPTNO EMAIL
+---------- ---------- ---------- --------- ---------- ---------- ---------- --------------------
+      7900 JAMES            7698 03-DEC-81        950                    30
+      7902 FORD             7566 03-DEC-81       3000                    20
+      7934 MILLER           7782 23-JAN-82       1300                    10
+
+14 rows selected.
+
+SQL> ALTER TABLE TEMP DROP(ENAME,MGR,HIREDATE,SAL,COMM,DEPTNO);
+
+Table altered.
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO EMAIL
+---------- --------------------
+      7369
+      7499
+      7521
+      7566
+      7654
+      7698
+      7782
+      7788
+      7839
+      7844
+      7876
+
+     EMPNO EMAIL
+---------- --------------------
+      7900
+      7902
+      7934
+
+14 rows selected.
+
+SQL> ALTER TABLE TEMP DROP(EMPNO,EMAIL);
+ALTER TABLE TEMP DROP(EMPNO,EMAIL)
+*
+ERROR at line 1:
+ORA-12983: cannot drop all columns in a table
+
+
+SQL> ALTER TABLE TEMP DROP(EMPNO);
+
+Table altered.
+
+SQL>  ALTER TABLE TEMP DROP(EMAIL);
+ ALTER TABLE TEMP DROP(EMAIL)
+*
+ERROR at line 1:
+ORA-12983: cannot drop all columns in a table

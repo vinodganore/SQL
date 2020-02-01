@@ -1,0 +1,369 @@
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40                                                                 
+      1001 VINO                                            5461                    20                                                                 
+
+15 rows selected.
+
+SQL> DELETE FROM TEMP WHERE EMPNO=1001;
+
+1 row deleted.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40                                                                 
+
+14 rows selected.
+
+SQL> SET AUTOTRACE ON EXPLAIN;
+SQL> CREATE MATERIALIZED VIEW EMP_DNO ENABLE QUERY REWRITE
+  2  AS
+  3  SELECT DEPTNO,SUM(SAL),COUNT(EMPNO)
+  4  FROM TEMP
+  5  GROUP BY DEPTNO;
+
+Materialized view created.
+
+SQL> DESC EMP_DNO;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ DEPTNO                                                                                       NUMBER(2)
+ SUM(SAL)                                                                                     NUMBER
+ COUNT(EMPNO)                                                                                 NUMBER
+
+SQL> SELECT * FROM EMP_DNO;
+
+    DEPTNO   SUM(SAL) COUNT(EMPNO)                                                                                                                    
+---------- ---------- ------------                                                                                                                    
+        30       9400            6                                                                                                                    
+        20      10875            5                                                                                                                    
+        40       1300            1                                                                                                                    
+        10       7450            2                                                                                                                    
+
+
+Execution Plan
+----------------------------------------------------------                                                                                            
+Plan hash value: 1905403009                                                                                                                           
+                                                                                                                                                      
+--------------------------------------------------------------------------------                                                                      
+| Id  | Operation            | Name    | Rows  | Bytes | Cost (%CPU)| Time     |                                                                      
+--------------------------------------------------------------------------------                                                                      
+|   0 | SELECT STATEMENT     |         |     4 |   156 |     3   (0)| 00:00:01 |                                                                      
+|   1 |  MAT_VIEW ACCESS FULL| EMP_DNO |     4 |   156 |     3   (0)| 00:00:01 |                                                                      
+--------------------------------------------------------------------------------                                                                      
+                                                                                                                                                      
+Note                                                                                                                                                  
+-----                                                                                                                                                 
+   - dynamic sampling used for this statement                                                                                                         
+
+SQL> UPDATE TEMP SET DEPTNO=10 WHERE EMPNO=7934;
+
+1 row updated.
+
+
+Execution Plan
+----------------------------------------------------------                                                                                            
+Plan hash value: 3156137381                                                                                                                           
+                                                                                                                                                      
+-----------------------------------------------------------------------------                                                                         
+| Id  | Operation         | Name    | Rows  | Bytes | Cost (%CPU)| Time     |                                                                         
+-----------------------------------------------------------------------------                                                                         
+|   0 | UPDATE STATEMENT  |         |     1 |    26 |     1   (0)| 00:00:01 |                                                                         
+|   1 |  UPDATE           | TEMP    |       |       |            |          |                                                                         
+|*  2 |   INDEX RANGE SCAN| TEMP_PK |     1 |    26 |     0   (0)| 00:00:01 |                                                                         
+-----------------------------------------------------------------------------                                                                         
+                                                                                                                                                      
+Predicate Information (identified by operation id):                                                                                                   
+---------------------------------------------------                                                                                                   
+                                                                                                                                                      
+   2 - access("EMPNO"=7934)                                                                                                                           
+
+SQL> SET AUTOTRACE OFF EXPLAIN;
+SQL> INSERT INTO TEMP(EMPNO,ENAME,SAL,DEPTNO) VALUES(1001,'JAN',5642,10);
+
+1 row created.
+
+SQL> SELECT * FROM EMP_DNO;
+
+    DEPTNO   SUM(SAL) COUNT(EMPNO)                                                                                                                    
+---------- ---------- ------------                                                                                                                    
+        30       9400            6                                                                                                                    
+        20      10875            5                                                                                                                    
+        40       1300            1                                                                                                                    
+        10       7450            2                                                                                                                    
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10                                                                 
+      1001 JAN                                             5642                    10                                                                 
+
+15 rows selected.
+
+SQL> CREATE MATERIALIZED VIEW MV1 ENABLE QUERY REWRITE
+  2  AS
+  3  SELECT DEPTNO,SUM(SAL),COUNT(EMPNO)
+  4  FROM TEMP
+  5  GROUP BY DEPTNO;
+
+Materialized view created.
+
+SQL> DESC MV1;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ DEPTNO                                                                                       NUMBER(2)
+ SUM(SAL)                                                                                     NUMBER
+ COUNT(EMPNO)                                                                                 NUMBER
+
+SQL> SELECT * FROM MV1;
+
+    DEPTNO   SUM(SAL) COUNT(EMPNO)                                                                                                                    
+---------- ---------- ------------                                                                                                                    
+        30       9400            6                                                                                                                    
+        20      10875            5                                                                                                                    
+        10      14392            4                                                                                                                    
+
+SQL> INSERT INTO TEMP(EMPNO,ENAME,SAL,DEPTNO) VALUES(1002,'VINOD',24515,10);
+
+1 row created.
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10                                                                 
+      1001 JAN                                             5642                    10                                                                 
+      1002 VINOD                                          24515                    10                                                                 
+
+16 rows selected.
+
+SQL> SELECT * FROM MV1;
+
+    DEPTNO   SUM(SAL) COUNT(EMPNO)                                                                                                                    
+---------- ---------- ------------                                                                                                                    
+        30       9400            6                                                                                                                    
+        20      10875            5                                                                                                                    
+        10      14392            4                                                                                                                    
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SELECT * FROM MV1;
+
+    DEPTNO   SUM(SAL) COUNT(EMPNO)                                                                                                                    
+---------- ---------- ------------                                                                                                                    
+        30       9400            6                                                                                                                    
+        20      10875            5                                                                                                                    
+        10      14392            4                                                                                                                    
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1   CREATE MATERIALIZED VIEW MV2
+  2   REFRESH ON COMMIT
+  3   ENABLE QUERY REWRITE
+  4   AS
+  5   SELECT DEPTNO,SUM(SAL),COUNT(EMPNO)
+  6   FROM TEMP
+  7*  GROUP BY DEPTNO;
+SQL> /
+ GROUP BY DEPTNO;
+                *
+ERROR at line 7:
+ORA-00911: invalid character 
+
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1   CREATE MATERIALIZED VIEW MV2
+  2   REFRESH ON COMMIT
+  3   ENABLE QUERY REWRITE
+  4   AS
+  5   SELECT DEPTNO,SUM(SAL),COUNT(EMPNO)
+  6   FROM TEMP
+  7*  GROUP BY DEPTNO
+SQL> /
+
+Materialized view created.
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10                                                                 
+      1001 JAN                                             5642                    10                                                                 
+      1002 VINOD                                          24515                    10                                                                 
+
+16 rows selected.
+
+SQL> SELECT * FROM MV2;
+
+    DEPTNO   SUM(SAL) COUNT(EMPNO)                                                                                                                    
+---------- ---------- ------------                                                                                                                    
+        30       9400            6                                                                                                                    
+        20      10875            5                                                                                                                    
+        10      38907            5                                                                                                                    
+
+SQL> INSERT INTO TEMP(EMPNO,ENAME,SAL,DEPTNO) VALUES(1003,'VIN',6543,20);
+
+1 row created.
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10                                                                 
+      1003 VIN                                             6543                    20                                                                 
+      1001 JAN                                             5642                    10                                                                 
+      1002 VINOD                                          24515                    10                                                                 
+
+17 rows selected.
+
+SQL> SELECT * FROM MV2;
+
+    DEPTNO   SUM(SAL) COUNT(EMPNO)                                                                                                                    
+---------- ---------- ------------                                                                                                                    
+        30       9400            6                                                                                                                    
+        20      10875            5                                                                                                                    
+        10      38907            5                                                                                                                    
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SELECT * FROM MV2;
+
+    DEPTNO   SUM(SAL) COUNT(EMPNO)                                                                                                                    
+---------- ---------- ------------                                                                                                                    
+        30       9400            6                                                                                                                    
+        20      17418            6                                                                                                                    
+        10      38907            5                                                                                                                    
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> CREATE VIEW EX
+  2  AS
+  3  SELECT EMPNO,ENAME,SAL,DEPTNO
+  4  FROM TEMP
+  5  ORDER BY SAL DESC;
+
+View created.
+
+SQL> INSERT INTO EX VALUES(1005,'ADFF',6589,50);
+INSERT INTO EX VALUES(1005,'ADFF',6589,50)
+            *
+ERROR at line 1:
+ORA-01732: data manipulation operation not legal on this view 
+
+
+SQL> SPOOL OFF;

@@ -1,0 +1,352 @@
+SQL> select * from emp;
+
+no rows selected
+
+SQL> conn vinod1
+Connected.
+SQL> select * from tab;
+
+TNAME                          TABTYPE  CLUSTERID                                                   
+------------------------------ ------- ----------                                                   
+TEMP                           TABLE                                                                
+EMPSALARY                      VIEW                                                                 
+DEPT                           TABLE                                                                
+EMP                            TABLE                                                                
+EMPV                           VIEW                                                                 
+EMPV2                          VIEW                                                                 
+DEPTNO20                       VIEW                                                                 
+DEPTNO30                       TABLE                                                                
+
+8 rows selected.
+
+SQL> desc user_constraints;
+ Name                                                  Null?    Type
+ ----------------------------------------------------- -------- ------------------------------------
+ OWNER                                                 NOT NULL VARCHAR2(30)
+ CONSTRAINT_NAME                                       NOT NULL VARCHAR2(30)
+ CONSTRAINT_TYPE                                                VARCHAR2(1)
+ TABLE_NAME                                            NOT NULL VARCHAR2(30)
+ SEARCH_CONDITION                                               LONG
+ R_OWNER                                                        VARCHAR2(30)
+ R_CONSTRAINT_NAME                                              VARCHAR2(30)
+ DELETE_RULE                                                    VARCHAR2(9)
+ STATUS                                                         VARCHAR2(8)
+ DEFERRABLE                                                     VARCHAR2(14)
+ DEFERRED                                                       VARCHAR2(9)
+ VALIDATED                                                      VARCHAR2(13)
+ GENERATED                                                      VARCHAR2(14)
+ BAD                                                            VARCHAR2(3)
+ RELY                                                           VARCHAR2(4)
+ LAST_CHANGE                                                    DATE
+ INDEX_OWNER                                                    VARCHAR2(30)
+ INDEX_NAME                                                     VARCHAR2(30)
+ INVALID                                                        VARCHAR2(7)
+ VIEW_RELATED                                                   VARCHAR2(14)
+
+SQL> select CONSTRAINT_NAME,CONSTRAINT_TYPE,TABLE_NAME,STATUS,INDEX_NAME
+  2  FROM USER_CONSTRAINTS
+  3  WHERE TABLE_NAME='TEMP';
+
+CONSTRAINT_NAME                C TABLE_NAME                     STATUS                              
+------------------------------ - ------------------------------ --------                            
+INDEX_NAME                                                                                          
+------------------------------                                                                      
+SYS_C005738                    P TEMP                           ENABLED                             
+SYS_C005738                                                                                         
+                                                                                                    
+
+SQL> SET LINE 200;
+SQL> /
+
+CONSTRAINT_NAME                C TABLE_NAME                     STATUS   INDEX_NAME                                                                                                                     
+------------------------------ - ------------------------------ -------- ------------------------------                                                                                                 
+SYS_C005738                    P TEMP                           ENABLED  SYS_C005738                                                                                                                    
+
+SQL> DESC TEMP;
+ Name                                                                                                              Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ EMPNO                                                                                                             NOT NULL NUMBER(4)
+ ENAME                                                                                                                      VARCHAR2(10)
+ JOB                                                                                                                        VARCHAR2(9)
+ MGR                                                                                                                        NUMBER(4)
+ HIREDATE                                                                                                                   DATE
+ SAL                                                                                                                        NUMBER(7,2)
+ COMM                                                                                                                       NUMBER(7,2)
+ DEPTNO                                                                                                                     NUMBER(2)
+ EMAIL                                                                                                                      VARCHAR2(20)
+
+SQL> SET LINE 150;
+SQL> /
+
+CONSTRAINT_NAME                C TABLE_NAME                     STATUS   INDEX_NAME                                                                   
+------------------------------ - ------------------------------ -------- ------------------------------                                               
+SYS_C005738                    P TEMP                           ENABLED  SYS_C005738                                                                  
+
+SQL> DESC TEMP;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ EMPNO                                                                               NOT NULL NUMBER(4)
+ ENAME                                                                                        VARCHAR2(10)
+ JOB                                                                                          VARCHAR2(9)
+ MGR                                                                                          NUMBER(4)
+ HIREDATE                                                                                     DATE
+ SAL                                                                                          NUMBER(7,2)
+ COMM                                                                                         NUMBER(7,2)
+ DEPTNO                                                                                       NUMBER(2)
+ EMAIL                                                                                        VARCHAR2(20)
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40                                                                 
+
+14 rows selected.
+
+SQL> select CONSTRAINT_NAME,CONSTRAINT_TYPE,TABLE_NAME,STATUS,INDEX_NAME
+  2  FROM USER_CONSTRAINTS
+  3  WHERE TABLE_NAME='TEMP'
+  4  .
+SQL> ED
+Wrote file afiedt.buf
+
+  1  select CONSTRAINT_NAME,CONSTRAINT_TYPE,TABLE_NAME,STATUS,INDEX_NAME,DEFERRABLE
+  2  FROM USER_CONSTRAINTS
+  3* WHERE TABLE_NAME='TEMP'
+SQL> /
+
+CONSTRAINT_NAME                C TABLE_NAME                     STATUS   INDEX_NAME                     DEFERRABLE                                    
+------------------------------ - ------------------------------ -------- ------------------------------ --------------                                
+SYS_C005738                    P TEMP                           ENABLED  SYS_C005738                    NOT DEFERRABLE                                
+
+SQL> ALTER TABLE TEMP MODIFY CONSTRAINT SYS_C005738 INITIALLY DEFERRED;
+ALTER TABLE TEMP MODIFY CONSTRAINT SYS_C005738 INITIALLY DEFERRED
+*
+ERROR at line 1:
+ORA-02447: cannot defer a constraint that is not deferrable 
+
+
+SQL> ALTER TABLE EMP DROP CONSTRAINT SYS_C005738;
+ALTER TABLE EMP DROP CONSTRAINT SYS_C005738
+                                *
+ERROR at line 1:
+ORA-02443: Cannot drop constraint  - nonexistent constraint 
+
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1* ALTER TABLE TEMP DROP CONSTRAINT SYS_C005738
+SQL> /
+
+Table altered.
+
+SQL> DESC TEMP;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ EMPNO                                                                                        NUMBER(4)
+ ENAME                                                                                        VARCHAR2(10)
+ JOB                                                                                          VARCHAR2(9)
+ MGR                                                                                          NUMBER(4)
+ HIREDATE                                                                                     DATE
+ SAL                                                                                          NUMBER(7,2)
+ COMM                                                                                         NUMBER(7,2)
+ DEPTNO                                                                                       NUMBER(2)
+ EMAIL                                                                                        VARCHAR2(20)
+
+SQL> select CONSTRAINT_NAME,CONSTRAINT_TYPE,TABLE_NAME,STATUS,INDEX_NAME,DEFERRABLE
+  2  FROM USER_CONSTRAINTS
+  3  WHERE TABLE_NAME='TEMP';
+
+no rows selected
+
+SQL> ALTER TABLE TEMP ADD CONSTRAINT TEMP_PK PRIMARY KEY(EMPNO) DEFERRABLE;
+
+Table altered.
+
+SQL> DESC TEMP;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ EMPNO                                                                                        NUMBER(4)
+ ENAME                                                                                        VARCHAR2(10)
+ JOB                                                                                          VARCHAR2(9)
+ MGR                                                                                          NUMBER(4)
+ HIREDATE                                                                                     DATE
+ SAL                                                                                          NUMBER(7,2)
+ COMM                                                                                         NUMBER(7,2)
+ DEPTNO                                                                                       NUMBER(2)
+ EMAIL                                                                                        VARCHAR2(20)
+
+SQL> select CONSTRAINT_NAME,CONSTRAINT_TYPE,TABLE_NAME,STATUS,INDEX_NAME,DEFERRABLE
+  2  FROM USER_CONSTRAINTS
+  3  WHERE TABLE_NAME='TEMP';
+
+CONSTRAINT_NAME                C TABLE_NAME                     STATUS   INDEX_NAME                     DEFERRABLE                                    
+------------------------------ - ------------------------------ -------- ------------------------------ --------------                                
+TEMP_PK                        P TEMP                           ENABLED  TEMP_PK                        DEFERRABLE                                    
+
+SQL> INSERT INTO TEMP(EMPNO,ENAME,SAL) VALUES(7369,'JAN',2541);
+INSERT INTO TEMP(EMPNO,ENAME,SAL) VALUES(7369,'JAN',2541)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VINOD1.TEMP_PK) violated 
+
+
+SQL> ALTER TABLE TEMP MODIFY CONSTRAINT TEMP_PK PRIMARY KEY(EMPNO) INITIALLY DEFERRED;
+ALTER TABLE TEMP MODIFY CONSTRAINT TEMP_PK PRIMARY KEY(EMPNO) INITIALLY DEFERRED
+                                           *
+ERROR at line 1:
+ORA-00933: SQL command not properly ended 
+
+
+SQL> ED
+Wrote file afiedt.buf
+
+  1* ALTER TABLE TEMP MODIFY CONSTRAINT TEMP_PK INITIALLY DEFERRED
+SQL> /
+
+Table altered.
+
+SQL> DESC TEMP;
+ Name                                                                                Null?    Type
+ ----------------------------------------------------------------------------------- -------- --------------------------------------------------------
+ EMPNO                                                                                        NUMBER(4)
+ ENAME                                                                                        VARCHAR2(10)
+ JOB                                                                                          VARCHAR2(9)
+ MGR                                                                                          NUMBER(4)
+ HIREDATE                                                                                     DATE
+ SAL                                                                                          NUMBER(7,2)
+ COMM                                                                                         NUMBER(7,2)
+ DEPTNO                                                                                       NUMBER(2)
+ EMAIL                                                                                        VARCHAR2(20)
+
+SQL> select CONSTRAINT_NAME,CONSTRAINT_TYPE,TABLE_NAME,STATUS,INDEX_NAME,DEFERRABLE
+  2  FROM USER_CONSTRAINTS
+  3  WHERE TABLE_NAME='TEMP';
+
+CONSTRAINT_NAME                C TABLE_NAME                     STATUS   INDEX_NAME                     DEFERRABLE                                    
+------------------------------ - ------------------------------ -------- ------------------------------ --------------                                
+TEMP_PK                        P TEMP                           ENABLED  TEMP_PK                        DEFERRABLE                                    
+
+SQL> INSERT INTO TEMP(EMPNO,ENAME,SAL) VALUES(7369,'JAN',2541);
+
+1 row created.
+
+SQL> /
+
+1 row created.
+
+SQL> /
+
+1 row created.
+
+SQL> /
+
+1 row created.
+
+SQL> /
+
+1 row created.
+
+SQL> 
+SQL> /
+
+1 row created.
+
+SQL> /
+
+1 row created.
+
+SQL> /
+
+1 row created.
+
+SQL> /
+
+1 row created.
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40                                                                 
+      7369 JAN                                             2541                                                                                       
+      7369 JAN                                             2541                                                                                       
+      7369 JAN                                             2541                                                                                       
+      7369 JAN                                             2541                                                                                       
+      7369 JAN                                             2541                                                                                       
+      7369 JAN                                             2541                                                                                       
+      7369 JAN                                             2541                                                                                       
+      7369 JAN                                             2541                                                                                       
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 JAN                                             2541                                                                                       
+
+23 rows selected.
+
+SQL> COMMIT;
+COMMIT
+*
+ERROR at line 1:
+ORA-02091: transaction rolled back 
+ORA-00001: unique constraint (VINOD1.TEMP_PK) violated 
+
+
+SQL> SELECT * FROM TEMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7369 SMITH      CLERK           7902 17-DEC-80        800                    20                                                                 
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30                                                                 
+      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30                                                                 
+      7566 JONES      MANAGER         7839 02-APR-81       2975                    20                                                                 
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30                                                                 
+      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30                                                                 
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10                                                                 
+      7788 SCOTT      ANALYST         7566 09-DEC-82       3000                    20                                                                 
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10                                                                 
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30                                                                 
+      7876 ADAMS      CLERK           7788 12-JAN-83       1100                    20                                                                 
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO EMAIL                                                           
+---------- ---------- --------- ---------- --------- ---------- ---------- ---------- --------------------                                            
+      7900 JAMES      CLERK           7698 03-DEC-81        950                    30                                                                 
+      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20                                                                 
+      7934 MILLER     CLERK           7782 23-JAN-82       1300                    40                                                                 
+
+14 rows selected.
+
+SQL> SPOOL OFF;
